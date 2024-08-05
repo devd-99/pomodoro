@@ -1,7 +1,8 @@
 // App.js
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import OptionsPage from './optionPage';
 import './App.css';
+import { FaPlay, FaPause, FaForward, FaCog } from 'react-icons/fa';
 
 const POMODORO_TYPES = [
   { name: 'Work', duration: 25 },
@@ -25,6 +26,8 @@ function App() {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [showOptions, setShowOptions] = useState(false);
 
+  const timerButtonRef = useRef(null);
+  const skipButtonRef = useRef(null);
 
   useEffect(() => {
     const storedSettings = JSON.parse(localStorage.getItem('pomodoroSettings'));
@@ -75,10 +78,7 @@ function App() {
     setTimeLeft(POMODORO_TYPES[(pomodoroType + 1) % POMODORO_TYPES.length].duration * 60);
   }, [pomodoroType]);
 
-  function handleSkipClick() {
-    switchPomodoroType();
-    playSound(settings.backgroundTunes[pomodoroType]);
-  }
+
 
   function formatTime(timeInSeconds) {
     const minutes = Math.floor(timeInSeconds / 60)
@@ -102,6 +102,27 @@ function App() {
     }));
   }
 
+  const handleTimerButtonClick = () => {
+    toggleTimer();
+    timerButtonRef.current.classList.add('button-press');
+    setTimeout(() => {
+      timerButtonRef.current.classList.remove('button-press');
+    }, 400);
+  };
+
+  const handleSkipButtonClick = () => {
+    console.log("skipping")
+    if(isRunning){
+      console.log("skipping")
+    }
+    switchPomodoroType();
+    playSound(settings.backgroundTunes[pomodoroType]);
+    skipButtonRef.current.classList.add('button-press');
+    setTimeout(() => {
+      skipButtonRef.current.classList.remove('button-press');
+    }, 400);
+  };
+
   function handleOptionsClick() {
     setShowOptions(true);
   }
@@ -124,24 +145,22 @@ function App() {
           <h1 className="timer-title">{POMODORO_TYPES[pomodoroType].name}</h1>
           <div className="timer-display">{formatTime(timeLeft)}</div>
           <div className="timer-buttons">
-            <button className="timer-button" onClick={toggleTimer}>
-              {isRunning ? 'Pause' : 'Start'}
+            <button ref={timerButtonRef} className="timer-button" onClick={handleTimerButtonClick}>
+              {isRunning ? <FaPause /> : <FaPlay />}
             </button>
-            <button className="timer-button" onClick={handleOptionsClick}>
-              Options
+            <button ref={skipButtonRef} className="timer-button" onClick={handleSkipButtonClick} disabled = {!isRunning}>
+              <FaForward />
             </button>
-            {isRunning ? (
-              <button className="timer-button" onClick={handleSkipClick}>
-                Skip
-              </button>
-            ) : (
-              <button className="timer-button" disabled>
-                Skip
-              </button>
-            )}
+
           </div>
           <div className="timer-settings">
-            <h2 className="settings-title">Setup</h2>
+            <div className="settings-header">
+              <h2 className="settings-title">Setup</h2>
+              <button className="options-button" onClick={handleOptionsClick}>
+                <FaCog />
+              </button>
+            </div>
+            
             <div className="settings-form">
               <div className="form-group">
                 <label className="form-label">
