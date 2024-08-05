@@ -1,5 +1,3 @@
-Certainly! I'll create a README for your Chrome Pomodoro extension based on the provided code and project structure. Here's a comprehensive README for your project:
-
 # Chrome Pomodoro Timer Extension
 
 A customizable Pomodoro timer extension for Chrome that helps you manage your work and break sessions effectively.
